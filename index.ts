@@ -1,11 +1,11 @@
 // Test utils
 
-const testBlock = (name) => {
+const testBlock = (name: string) => {
     console.groupEnd();
     console.group(`# ${name}\n`);
 };
 
-const areEqual = (array1, array2) => {
+const areEqual = (array1: unknown, array2: unknown) => {
     if (!Array.isArray(array1) || !Array.isArray(array2)) {
         return array1 === array2;
     }
@@ -22,7 +22,7 @@ const areEqual = (array1, array2) => {
     return true;
 };
 
-const test = (whatWeTest, actualResult, expectedResult) => {
+const test = (whatWeTest: string, actualResult: unknown, expectedResult: unknown) => {
     if (areEqual(actualResult, expectedResult)) {
         console.log(`[OK] ${whatWeTest}\n`);
     } else {
@@ -37,19 +37,19 @@ const test = (whatWeTest, actualResult, expectedResult) => {
 
 // Functions
 
-const getType = (value) => {
+const getType = (value: unknown) => {
     return typeof value;
 };
 
-const getTypesOfItems = (arr) => {
+const getTypesOfItems = (arr: unknown[]) => {
     return arr.map((item) => getType(item));
 };
 
-const allItemsHaveTheSameType = (arr) => {
+const allItemsHaveTheSameType = (arr: unknown[]) => {
     return arr.every((el) => typeof el === typeof arr[0]);
 };
 
-const getRealType = (value) => {
+const getRealType = (value: unknown) => {
     if (value === null) {
         return 'null';
     }
@@ -67,23 +67,23 @@ const getRealType = (value) => {
     return value.constructor.name.toLowerCase();
 };
 
-const getRealTypesOfItems = (arr) => {
+const getRealTypesOfItems = (arr: unknown[]) => {
     return arr.map((value) => getRealType(value));
 };
 
-const everyItemHasAUniqueRealType = (arr) => {
+const everyItemHasAUniqueRealType = (arr: unknown[]) => {
     const realTypesArray = getRealTypesOfItems(arr);
     const uniqueRealTypes = new Set(realTypesArray);
     return realTypesArray.length === uniqueRealTypes.size;
 };
 
-const countRealTypes = (arr) => {
-    const realTypesCounter = arr.reduce((acc, item) => {
+const countRealTypes = (arr: unknown[]) => {
+    const realTypesCounter = arr.reduce((acc: Record<string, number>, item) => {
         const realType = getRealType(item);
         if (!acc[realType]) {
             acc[realType] = 0;
         }
-        acc[realType] += 1;
+        acc[realType]++;
         return acc;
     }, {});
 
@@ -115,6 +115,7 @@ test('All values are strings', allItemsHaveTheSameType(['11', '12', '13']), true
 
 test('All values are strings but wait', allItemsHaveTheSameType(['11', new String('12'), '13']), false);
 
+// @ts-expect-error такой тест, ничего не поделать
 test('Values like a number', allItemsHaveTheSameType([123, 123 / 'a', 1 / 0]), true);
 
 test('Values like an object', allItemsHaveTheSameType([{}]), true);
@@ -182,6 +183,7 @@ testBlock('everyItemHasAUniqueRealType');
 
 test('All value types in the array are unique', everyItemHasAUniqueRealType([true, 123, '123']), true);
 
+// @ts-expect-error такой тест, ничего не поделать
 test('Two values have the same type', everyItemHasAUniqueRealType([true, 123, '123' === 123]), false);
 
 test('There are no repeated types in knownTypes', everyItemHasAUniqueRealType(knownTypes), true);
